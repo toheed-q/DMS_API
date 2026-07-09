@@ -2,13 +2,14 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using DMS.Models;
+using DMS_Backend.Services.Interfaces;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace DMS_Backend.Services
 {
     /// <summary>Issues signed JWT access tokens for authenticated users.</summary>
-    public class JwtTokenService
+    public class JwtTokenService : ITokenService
     {
         private readonly JwtOptions _opt;
 

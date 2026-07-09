@@ -1,5 +1,5 @@
 using DMS.Models;
-using DMS_Backend.Services;
+using DMS_Backend.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace DMS_Backend.Data
@@ -24,13 +24,14 @@ namespace DMS_Backend.Data
                 if (!await db.Users.AnyAsync())
                 {
                     var cfg = services.GetRequiredService<IConfiguration>();
+                    var hasher = services.GetRequiredService<IPasswordHasher>();
                     var username = cfg["Seed:AdminUsername"] ?? "admin";
                     var password = cfg["Seed:AdminPassword"] ?? "admin123";
 
                     db.Users.Add(new User
                     {
                         Username = username,
-                        Password = PasswordHasher.Hash(password),
+                        Password = hasher.Hash(password),
                         Role = "Admin",
                         FullName = "System Administrator",
                         IsApproved = true,
