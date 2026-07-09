@@ -31,6 +31,7 @@ namespace DMS_Backend.Extensions
             services.AddSingleton<IPasswordHasher, PasswordHasher>();
             services.AddSingleton<ITokenService, JwtTokenService>();
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IProductService, ProductService>();
             return services;
         }
 
