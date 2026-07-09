@@ -32,6 +32,10 @@ namespace DMS_Backend.Extensions
             services.AddSingleton<ITokenService, JwtTokenService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<IShopService, ShopService>();
+            services.AddScoped<IRouteService, RouteService>();
+            services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<ISalesmanService, SalesmanService>();
             return services;
         }
 
