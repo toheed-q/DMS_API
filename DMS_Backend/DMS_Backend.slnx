@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="DMS.Shared/DMS.Shared.csproj" />
+  <Project Path="DMS_Backend/DMS_Backend.csproj" />
+</Solution>
