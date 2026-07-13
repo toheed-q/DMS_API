@@ -10,6 +10,12 @@ namespace DMS_Backend.Controllers
     [ApiController]
     public abstract class BaseApiController : ControllerBase
     {
+        /// <summary>For create endpoints: 201 on success, standard error mapping otherwise.</summary>
+        protected IActionResult HandleCreated<T>(Result<T> result)
+            => result.IsSuccess
+                ? StatusCode(StatusCodes.Status201Created, result.Value)
+                : HandleResult(result);
+
         protected IActionResult HandleResult<T>(Result<T> result)
         {
             if (result.IsSuccess)

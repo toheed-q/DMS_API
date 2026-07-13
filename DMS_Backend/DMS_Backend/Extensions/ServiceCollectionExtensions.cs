@@ -28,9 +28,12 @@ namespace DMS_Backend.Extensions
         /// Add every new I*Service -> *Service mapping here.</summary>
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
         {
+            services.AddHttpContextAccessor();
             services.AddSingleton<IPasswordHasher, PasswordHasher>();
             services.AddSingleton<ITokenService, JwtTokenService>();
+            services.AddScoped<ICurrentUserService, CurrentUserService>();
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IReceivingService, ReceivingService>();
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IShopService, ShopService>();
             services.AddScoped<IRouteService, RouteService>();
