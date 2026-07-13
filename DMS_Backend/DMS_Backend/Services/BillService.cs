@@ -268,6 +268,75 @@ namespace DMS_Backend.Services
                 : Result<BillDto>.Success(bill);
         }
 
+        public async Task<Result<BillsPagedResult>> GetBillsAsync(BillQuery query)
+        {
+            var bills = _db.Bills.AsNoTracking();
+
+            if (query.From.HasValue)
+                bills = bills.Where(b => b.BillDate >= query.From.Value.Date);
+
+            if (query.To.HasValue)
+                bills = bills.Where(b => b.BillDate < query.To.Value.Date.AddDays(1));
+
+            if (query.ShopId.HasValue)
+                bills = bills.Where(b => b.ShopId == query.ShopId.Value);
+
+            if (query.SalesmanId.HasValue)
+                bills = bills.Where(b => b.SMId == query.SalesmanId.Value);
+
+            // "Paid" = what was collected at the counter covers this bill's own total
+            // (previous dues rolled into the bill are excluded from that comparison).
+            if (query.PaidOnly == true)
+                bills = bills.Where(b => b.PaidAmount >= b.TotalAmount - b.PreviousDues);
+
+            if (!string.IsNullOrWhiteSpace(query.Search))
+            {
+                var term = query.Search.Trim();
+                int.TryParse(term, out var billNo);
+
+                bills = bills.Where(b =>
+                    (billNo > 0 && b.BillId == billNo) ||
+                    (b.Shop != null && b.Shop.Name.Contains(term)) ||
+                    (b.WalkInCustomerName != null && b.WalkInCustomerName.Contains(term)) ||
+                    b.BillItems.Any(bi => bi.ProductName.Contains(term)));
+            }
+
+            var totalCount = await bills.CountAsync();
+            var totalBilled = await bills.SumAsync(b => (decimal?)(b.TotalAmount - b.PreviousDues)) ?? 0m;
+            var totalPaid = await bills.SumAsync(b => (decimal?)b.PaidAmount) ?? 0m;
+
+            var items = await bills
+                .OrderByDescending(b => b.BillDate)
+                .Skip((query.Page - 1) * query.PageSize)
+                .Take(query.PageSize)
+                .Select(b => new BillSummaryDto
+                {
+                    Id = b.BillId,
+                    BillDate = b.BillDate,
+                    ShopId = b.ShopId,
+                    CustomerName = b.Shop != null ? b.Shop.Name : b.WalkInCustomerName,
+                    IsWalkIn = b.ShopId == null,
+                    SalesmanId = b.SMId,
+                    SalesmanName = b.Salesman != null ? b.Salesman.FullName : null,
+                    ItemCount = b.BillItems.Count,
+                    BillTotal = b.TotalAmount - b.PreviousDues,
+                    PaidAmount = b.PaidAmount,
+                    RemainingAmount = (b.TotalAmount - b.PreviousDues) - b.PaidAmount,
+                    IsPaid = b.PaidAmount >= b.TotalAmount - b.PreviousDues
+                })
+                .ToListAsync();
+
+            return Result<BillsPagedResult>.Success(new BillsPagedResult
+            {
+                Items = items,
+                Page = query.Page,
+                PageSize = query.PageSize,
+                TotalCount = totalCount,
+                TotalBilled = totalBilled,
+                TotalPaid = totalPaid
+            });
+        }
+
         /// <summary>Shop's current outstanding: bills - returns - receivings (never negative).</summary>
         private async Task<decimal> GetOutstandingAsync(int shopId)
         {

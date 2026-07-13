@@ -10,5 +10,8 @@ namespace DMS_Backend.Services.Interfaces
         Task<Result<BillDto>> CreateAsync(CreateBillRequest request);
 
         Task<Result<BillDto>> GetByIdAsync(int id);
+
+        /// <summary>Bills history: paginated + filterable, with aggregate totals.</summary>
+        Task<Result<BillsPagedResult>> GetBillsAsync(BillQuery query);
     }
 }

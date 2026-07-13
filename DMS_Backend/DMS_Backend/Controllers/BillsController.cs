@@ -19,6 +19,11 @@ namespace DMS_Backend.Controllers
         public async Task<IActionResult> Create([FromBody] CreateBillRequest request)
             => HandleCreated(await _billService.CreateAsync(request));
 
+        /// <summary>Bills history: paginated, filterable by date/shop/salesman/paid, with totals.</summary>
+        [HttpGet]
+        public async Task<IActionResult> Get([FromQuery] BillQuery query)
+            => HandleResult(await _billService.GetBillsAsync(query));
+
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById(int id)
             => HandleResult(await _billService.GetByIdAsync(id));

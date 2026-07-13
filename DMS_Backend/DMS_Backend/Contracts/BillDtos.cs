@@ -52,6 +52,37 @@ namespace DMS_Backend.Contracts
         public decimal PaidAmount { get; set; }
     }
 
+    /// <summary>Lightweight row for the bills-history list (items not included).</summary>
+    public class BillSummaryDto
+    {
+        public int Id { get; set; }
+        public DateTime BillDate { get; set; }
+        public int? ShopId { get; set; }
+        /// <summary>Shop name, or the walk-in customer's name.</summary>
+        public string? CustomerName { get; set; }
+        public bool IsWalkIn { get; set; }
+        public int? SalesmanId { get; set; }
+        public string? SalesmanName { get; set; }
+        public int ItemCount { get; set; }
+
+        /// <summary>This bill's own total (excludes previous dues).</summary>
+        public decimal BillTotal { get; set; }
+        public decimal PaidAmount { get; set; }
+        public decimal RemainingAmount { get; set; }
+        public bool IsPaid { get; set; }
+    }
+
+    /// <summary>Filters for the bills list (inherits page/pageSize/search).</summary>
+    public class BillQuery : PaginationQuery
+    {
+        public DateTime? From { get; set; }
+        public DateTime? To { get; set; }
+        public int? ShopId { get; set; }
+        public int? SalesmanId { get; set; }
+        /// <summary>Only bills fully paid at the counter.</summary>
+        public bool? PaidOnly { get; set; }
+    }
+
     public class BillItemDto
     {
         public int ProductId { get; set; }
