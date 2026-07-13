@@ -40,6 +40,16 @@ namespace DMS_Backend.Services
             if (shop is null)
                 return Fail($"Shop {request.ShopId} was not found.", ErrorType.NotFound);
 
+            // SECURITY: a field salesman may only file returns against themselves —
+            // whatever SalesmanId they send is ignored and forced to their own.
+            if (_currentUser.IsSalesman)
+            {
+                if (_currentUser.SalesmanId is null)
+                    return Fail("Your login is not linked to a salesman record.", ErrorType.Forbidden);
+
+                request.SalesmanId = _currentUser.SalesmanId.Value;
+            }
+
             var salesman = await _db.Salesmen.AsNoTracking()
                 .Where(s => s.SalesmanId == request.SalesmanId)
                 .Select(s => new { s.SalesmanId, s.FullName })
@@ -124,6 +134,16 @@ namespace DMS_Backend.Services
 
         public async Task<Result<ReturnsPagedResult>> GetReturnsAsync(ReturnQuery query)
         {
+            // SECURITY: a field salesman only ever sees their OWN returns.
+            if (_currentUser.IsSalesman)
+            {
+                if (_currentUser.SalesmanId is null)
+                    return Result<ReturnsPagedResult>.Failure(
+                        "Your login is not linked to a salesman record.", ErrorType.Forbidden);
+
+                query.SalesmanId = _currentUser.SalesmanId;
+            }
+
             var returns = _db.LedgerEntries.AsNoTracking().Where(l => l.IsReturn);
 
             if (query.SalesmanId.HasValue)

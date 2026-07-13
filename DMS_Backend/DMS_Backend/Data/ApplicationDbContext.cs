@@ -56,6 +56,14 @@ namespace DMS_Backend.Data
             modelBuilder.Entity<User>().ToTable("Users").HasKey(u => u.Id);
             modelBuilder.Entity<User>().HasIndex(u => u.Username).IsUnique();
 
+            // A login can be linked to a salesman (mobile users). Deleting the
+            // salesman record must not delete the login — just unlink it.
+            modelBuilder.Entity<User>()
+                .HasOne<Salesman>()
+                .WithMany()
+                .HasForeignKey(u => u.SalesmanId)
+                .OnDelete(DeleteBehavior.SetNull);
+
             // Route - Shop
             modelBuilder.Entity<Shop>()
                 .HasOne(s => s.Route)

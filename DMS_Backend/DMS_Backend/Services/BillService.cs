@@ -54,6 +54,16 @@ namespace DMS_Backend.Services
                 return Fail("A walk-in sale requires a customer name (or provide a shopId).", ErrorType.Validation);
             }
 
+            // SECURITY: a field salesman may only bill as themselves — whatever
+            // SalesmanId they send is ignored and forced to their own.
+            if (_currentUser.IsSalesman)
+            {
+                if (_currentUser.SalesmanId is null)
+                    return Fail("Your login is not linked to a salesman record.", ErrorType.Forbidden);
+
+                request.SalesmanId = _currentUser.SalesmanId;
+            }
+
             if (request.SalesmanId.HasValue &&
                 !await _db.Salesmen.AnyAsync(s => s.SalesmanId == request.SalesmanId.Value))
             {
@@ -270,6 +280,17 @@ namespace DMS_Backend.Services
 
         public async Task<Result<BillsPagedResult>> GetBillsAsync(BillQuery query)
         {
+            // SECURITY: a field salesman only ever sees their OWN bills, no matter
+            // what filter they pass.
+            if (_currentUser.IsSalesman)
+            {
+                if (_currentUser.SalesmanId is null)
+                    return Result<BillsPagedResult>.Failure(
+                        "Your login is not linked to a salesman record.", ErrorType.Forbidden);
+
+                query.SalesmanId = _currentUser.SalesmanId;
+            }
+
             var bills = _db.Bills.AsNoTracking();
 
             if (query.From.HasValue)

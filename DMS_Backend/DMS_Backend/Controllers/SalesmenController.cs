@@ -1,3 +1,4 @@
+using DMS_Backend.Common;
 using DMS_Backend.Contracts;
 using DMS_Backend.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -5,7 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DMS_Backend.Controllers
 {
-    [Authorize]
+    /// <summary>Employee records — office roles only. A field salesman has no business
+    /// browsing the roster (and is scoped to their own data everywhere else).</summary>
+    [Authorize(Roles = $"{Roles.Admin},{Roles.User}")]
     [Route("api/salesmen")]
     public class SalesmenController : BaseApiController
     {

@@ -15,7 +15,13 @@ namespace DMS.Models
         public string Password { get; set; } = "";  // In production, this should be hashed
         
         [Required]
-        public string Role { get; set; } = "User";  // "Admin" or "User"
+        public string Role { get; set; } = "User";  // "Admin", "User" or "Salesman"
+
+        /// <summary>
+        /// Links a login account to a Salesman record. Required for mobile
+        /// (Salesman-role) users — it's how the API scopes them to their own data.
+        /// </summary>
+        public int? SalesmanId { get; set; }
         
         public string? Email { get; set; } = "";
         
