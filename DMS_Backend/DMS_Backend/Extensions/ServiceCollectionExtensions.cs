@@ -37,6 +37,7 @@ namespace DMS_Backend.Extensions
             services.AddScoped<ISystemSettingsService, SystemSettingsService>();
             services.AddScoped<IBillService, BillService>();
             services.AddScoped<IReturnService, ReturnService>();
+            services.AddScoped<ILedgerService, LedgerService>();
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IShopService, ShopService>();
             services.AddScoped<IRouteService, RouteService>();
