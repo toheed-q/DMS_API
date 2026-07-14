@@ -202,6 +202,8 @@ public partial class OnboardingPage : ContentPage
         var width = Carousel.Width;
         if (width <= 0) return;
 
+        // Verified on Android: HorizontalOffset is reported in DIP, same units as
+        // Carousel.Width — so this ratio is the slide progress, 0 to 2.
         ApplyParallax(e.HorizontalOffset / width);
     }
 
@@ -212,27 +214,36 @@ public partial class OnboardingPage : ContentPage
 
         if (_reduceMotion)
         {
-            // No parallax: the copy simply belongs to the current slide.
+            // No parallax: the copy and blob simply belong to the current slide.
             for (var i = 0; i < _copyBlocks.Length; i++)
             {
+                var isCurrent = i == _vm.Position;
+
                 _copyBlocks[i].TranslationX = 0;
-                _copyBlocks[i].Opacity = i == _vm.Position ? 1 : 0;
+                _copyBlocks[i].Opacity = isCurrent ? 1 : 0;
+
+                _blobs[i].TranslationX = 0;
+                _blobs[i].Opacity = isCurrent ? 1 : 0;
             }
             return;
         }
 
-        CopyTrack.TranslationX = -progress * width;
-        BlobTrack.TranslationX = -progress * width;
-
+        // The net offset is applied directly to each block. (Translating the track and
+        // counter-translating the children lands in the same place, but leaves each
+        // child sitting outside its parent's LOCAL bounds — and a clipping parent then
+        // culls it entirely. That cost us every slide but the first.)
         for (var i = 0; i < _copyBlocks.Length; i++)
         {
             var off = (i - progress) * width;
 
-            _copyBlocks[i].TranslationX = i * width - 0.4 * off;   // net 0.6x
-            _blobs[i].TranslationX = i * width - 0.7 * off;        // net 0.3x
+            _copyBlocks[i].TranslationX = 0.6 * off;
+            _blobs[i].TranslationX = 0.3 * off;
 
-            // Fade with distance so a half-swiped slide reads as half-arrived.
-            _copyBlocks[i].Opacity = Math.Clamp(1 - Math.Abs(i - progress), 0, 1);
+            // Fade with distance, so a half-swiped slide reads as half-arrived — and
+            // so the neighbours a 0.6x/0.3x parallax leaves on screen stay invisible.
+            var nearness = Math.Clamp(1 - Math.Abs(i - progress), 0, 1);
+            _copyBlocks[i].Opacity = nearness;
+            _blobs[i].Opacity = nearness;
         }
     }
 

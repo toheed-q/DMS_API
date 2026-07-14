@@ -1,3 +1,5 @@
+using Microsoft.Maui.Controls.Shapes;
+
 namespace DMS_App.Onboarding.Controls;
 
 /// <summary>
