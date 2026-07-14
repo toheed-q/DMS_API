@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+using DMS_App.Onboarding;
+using DMS_App.Onboarding.Services;
+using Microsoft.Extensions.Logging;
 
 namespace DMS_App
 {
@@ -15,8 +17,14 @@ namespace DMS_App
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
 
+            // Onboarding
+            builder.Services.AddSingleton<IMotionSettings, MotionSettings>();
+            builder.Services.AddTransient<OnboardingViewModel>();
+            builder.Services.AddTransient<OnboardingPage>();
+            builder.Services.AddTransient<LoginPage>();
+
 #if DEBUG
-    		builder.Logging.AddDebug();
+            builder.Logging.AddDebug();
 #endif
 
             return builder.Build();

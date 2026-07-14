@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="DMS_App.LoginPage"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="{AppThemeBinding Light={StaticResource DmsBg}, Dark={StaticResource DmsBgDark}}">
+
+    <!-- Placeholder. Onboarding's CTA, Skip and "I already have an account" all land
+         here; the real login screen is the next piece of work. -->
+    <VerticalStackLayout VerticalOptions="Center" Spacing="8" Padding="24">
+        <Label Text="Login"
+               FontSize="30"
+               FontAttributes="Bold"
+               HorizontalTextAlignment="Center"
+               TextColor="{AppThemeBinding Light={StaticResource DmsText}, Dark={StaticResource DmsTextDark}}" />
+        <Label Text="Onboarding complete — the login screen goes here."
+               FontSize="15"
+               HorizontalTextAlignment="Center"
+               TextColor="{AppThemeBinding Light={StaticResource DmsTextSecondary}, Dark={StaticResource DmsTextSecondaryDark}}" />
+    </VerticalStackLayout>
+</ContentPage>

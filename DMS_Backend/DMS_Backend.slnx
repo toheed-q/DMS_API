@@ -1,4 +1,7 @@
 <Solution>
+  <Project Path="DMS-App/DMS-App.csproj" Id="78291a87-2f1b-4c8a-ac29-3a375fc3b50b">
+    <Deploy Solution="Debug|*" />
+  </Project>
   <Project Path="DMS.Shared/DMS.Shared.csproj" />
   <Project Path="DMS_Backend/DMS_Backend.csproj" />
 </Solution>

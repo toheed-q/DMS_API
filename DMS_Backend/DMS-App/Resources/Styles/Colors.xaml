@@ -1,5 +1,5 @@
-﻿<?xml version="1.0" encoding="UTF-8" ?>
-<ResourceDictionary 
+<?xml version="1.0" encoding="UTF-8" ?>
+<ResourceDictionary
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
 
@@ -41,4 +41,53 @@
     <SolidColorBrush x:Key="Gray600Brush" Color="{StaticResource Gray600}"/>
     <SolidColorBrush x:Key="Gray900Brush" Color="{StaticResource Gray900}"/>
     <SolidColorBrush x:Key="Gray950Brush" Color="{StaticResource Gray950}"/>
+
+    <!-- ===================================================================== -->
+    <!-- DMS Field design tokens. Consume via AppThemeBinding, e.g.            -->
+    <!--   {AppThemeBinding Light={StaticResource DmsBg}, Dark={StaticResource DmsBgDark}} -->
+    <!-- Palette.cs mirrors these for GraphicsView canvases, which do not      -->
+    <!-- inherit AppThemeBinding.                                              -->
+    <!-- ===================================================================== -->
+
+    <!-- Surfaces -->
+    <Color x:Key="DmsBg">#F5F7FA</Color>
+    <Color x:Key="DmsBgDark">#263238</Color>
+    <Color x:Key="DmsSurface">#FFFFFF</Color>
+    <Color x:Key="DmsSurfaceDark">#212121</Color>
+
+    <!-- Text. Secondary is #616161, NOT #757575: on #F5F7FA that is only 4.2:1,
+         below WCAG AA, and this app is sold as sunlight-readable. -->
+    <Color x:Key="DmsText">#212121</Color>
+    <Color x:Key="DmsTextDark">#FFFFFF</Color>
+    <Color x:Key="DmsTextSecondary">#616161</Color>
+    <Color x:Key="DmsTextSecondaryDark">#BFF5F7FA</Color>
+    <Color x:Key="DmsTrustLine">#616161</Color>
+    <Color x:Key="DmsTrustLineDark">#99F5F7FA</Color>
+
+    <!-- CTA gradient (same ramp in both themes; dark gets a softer glow) -->
+    <Color x:Key="DmsCtaStart">#1565C0</Color>
+    <Color x:Key="DmsCtaMid">#1976D2</Color>
+    <Color x:Key="DmsCtaEnd">#42A5F5</Color>
+
+    <!-- Brand blues -->
+    <Color x:Key="DmsPrimary">#1976D2</Color>
+    <Color x:Key="DmsPrimaryDeep">#1565C0</Color>
+    <Color x:Key="DmsPrimaryLight">#42A5F5</Color>
+
+    <!-- Dots -->
+    <Color x:Key="DmsDotActive">#1976D2</Color>
+    <Color x:Key="DmsDotActiveDark">#42A5F5</Color>
+    <Color x:Key="DmsDotInactive">#47757575</Color>
+    <Color x:Key="DmsDotInactiveDark">#3DF5F7FA</Color>
+
+    <!-- Links -->
+    <Color x:Key="DmsLink">#1976D2</Color>
+    <Color x:Key="DmsLinkDark">#42A5F5</Color>
+
+    <!-- Status -->
+    <Color x:Key="DmsSuccess">#4CAF50</Color>
+    <Color x:Key="DmsWarning">#FF9800</Color>
+    <Color x:Key="DmsDanger">#F44336</Color>
+    <Color x:Key="DmsInfo">#2196F3</Color>
+
 </ResourceDictionary>

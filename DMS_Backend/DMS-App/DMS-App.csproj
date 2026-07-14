@@ -70,4 +70,23 @@
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
 	</ItemGroup>
 
+	<!-- Filename-based multi-targeting. The MAUI SDK only does this for the
+	     Platforms/ folders, so opt in explicitly to keep platform partials
+	     (e.g. Services/MotionSettings.android.cs) next to their interface. -->
+	<ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) != 'android'">
+		<Compile Remove="**\*.android.cs" />
+		<None Include="**\*.android.cs" Exclude="$(BaseOutputPath)\**;$(BaseIntermediateOutputPath)\**" />
+	</ItemGroup>
+
+	<ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) != 'ios' AND $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) != 'maccatalyst'">
+		<Compile Remove="**\*.ios.cs" />
+		<None Include="**\*.ios.cs" Exclude="$(BaseOutputPath)\**;$(BaseIntermediateOutputPath)\**" />
+	</ItemGroup>
+
+	<!-- Windows has neither an animator-duration-scale nor UIAccessibility. -->
+	<ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android' OR $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' OR $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">
+		<Compile Remove="**\*.fallback.cs" />
+		<None Include="**\*.fallback.cs" Exclude="$(BaseOutputPath)\**;$(BaseIntermediateOutputPath)\**" />
+	</ItemGroup>
+
 </Project>

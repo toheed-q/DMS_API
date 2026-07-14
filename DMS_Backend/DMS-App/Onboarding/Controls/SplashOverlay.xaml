@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:shapes="clr-namespace:Microsoft.Maui.Controls.Shapes;assembly=Microsoft.Maui.Controls"
+             x:Class="DMS_App.Onboarding.Controls.SplashOverlay">
+
+    <!-- Full-bleed brand gradient. Identical in both themes — the splash is the
+         one surface that does not follow the system theme. -->
+    <Grid x:Name="Root" IsClippedToBounds="True">
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#1565C0" Offset="0.0" />
+                <GradientStop Color="#1976D2" Offset="1.0" />
+            </LinearGradientBrush>
+        </Grid.Background>
+
+        <!-- "Mesh": there is no cross-platform blur in MAUI, so the soft glow is
+             built from radial-gradient ellipses with wide, low-alpha stops. -->
+        <Grid x:Name="Mesh" Opacity="0">
+            <Ellipse x:Name="Blob1"
+                     WidthRequest="420" HeightRequest="420"
+                     HorizontalOptions="Start" VerticalOptions="Start"
+                     Margin="-140,-120,0,0">
+                <Ellipse.Fill>
+                    <RadialGradientBrush Center="0.5,0.5" Radius="0.5">
+                        <GradientStop Color="#8042A5F5" Offset="0.0" />
+                        <GradientStop Color="#0042A5F5" Offset="1.0" />
+                    </RadialGradientBrush>
+                </Ellipse.Fill>
+            </Ellipse>
+
+            <Ellipse x:Name="Blob2"
+                     WidthRequest="380" HeightRequest="380"
+                     HorizontalOptions="End" VerticalOptions="End"
+                     Margin="0,0,-120,-100">
+                <Ellipse.Fill>
+                    <RadialGradientBrush Center="0.5,0.5" Radius="0.5">
+                        <GradientStop Color="#6690CAF9" Offset="0.0" />
+                        <GradientStop Color="#0090CAF9" Offset="1.0" />
+                    </RadialGradientBrush>
+                </Ellipse.Fill>
+            </Ellipse>
+
+            <Ellipse x:Name="Blob3"
+                     WidthRequest="300" HeightRequest="300"
+                     HorizontalOptions="End" VerticalOptions="Start"
+                     Margin="0,-80,-90,0">
+                <Ellipse.Fill>
+                    <RadialGradientBrush Center="0.5,0.5" Radius="0.5">
+                        <GradientStop Color="#590D47A1" Offset="0.0" />
+                        <GradientStop Color="#000D47A1" Offset="1.0" />
+                    </RadialGradientBrush>
+                </Ellipse.Fill>
+            </Ellipse>
+        </Grid>
+
+        <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="24">
+
+            <!-- The DMS mark: an isometric delivery box built from exactly three
+                 paths. All three share one 120x124 box (Aspect=None) so their
+                 coordinates compose; each animates in independently. -->
+            <Grid x:Name="LogoBox"
+                  WidthRequest="120" HeightRequest="124"
+                  Scale="0.94"
+                  HorizontalOptions="Center">
+
+                <shapes:Path x:Name="PieceLeft"
+                             Data="M8,34 L60,64 L60,120 L8,90 Z"
+                             Fill="#64B5F6"
+                             Aspect="None"
+                             WidthRequest="120" HeightRequest="124"
+                             Opacity="0"
+                             TranslationX="-40"
+                             Rotation="10" />
+
+                <shapes:Path x:Name="PieceRight"
+                             Data="M112,34 L60,64 L60,120 L112,90 Z"
+                             Fill="#1E88E5"
+                             Aspect="None"
+                             WidthRequest="120" HeightRequest="124"
+                             Opacity="0"
+                             TranslationX="40"
+                             Rotation="-10" />
+
+                <shapes:Path x:Name="PieceTop"
+                             Data="M60,4 L112,34 L60,64 L8,34 Z"
+                             Fill="#BBDEFB"
+                             Aspect="None"
+                             WidthRequest="120" HeightRequest="124"
+                             Opacity="0"
+                             TranslationY="-40"
+                             Rotation="-12" />
+            </Grid>
+
+            <VerticalStackLayout x:Name="BrandText"
+                                 Spacing="6"
+                                 HorizontalOptions="Center"
+                                 Opacity="0"
+                                 TranslationY="12">
+                <Label Text="DMS Field"
+                       FontSize="30"
+                       FontAttributes="Bold"
+                       TextColor="White"
+                       HorizontalTextAlignment="Center" />
+                <Label Text="DISTRIBUTOR MOBILITY SYSTEM"
+                       FontSize="10"
+                       CharacterSpacing="3"
+                       TextColor="#CCE7F3FF"
+                       HorizontalTextAlignment="Center" />
+            </VerticalStackLayout>
+        </VerticalStackLayout>
+    </Grid>
+</ContentView>

@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:DMS_App.Onboarding.Controls"
+             xmlns:ios="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;assembly=Microsoft.Maui.Controls"
+             x:Class="DMS_App.Onboarding.OnboardingPage"
+             Shell.NavBarIsVisible="False"
+             ios:Page.UseSafeArea="False"
+             BackgroundColor="{AppThemeBinding Light={StaticResource DmsBg}, Dark={StaticResource DmsBgDark}}">
+
+    <!--
+      Row layout. 390x844 is a reference frame, not a device: the illustration stage
+      takes the flexible * row and everything else is Auto and bottom-anchored, so
+      this holds at 360dp and at 430dp.
+
+      Only these stay fixed: 16dp side margins, 56dp CTA height, 18dp CTA radius,
+      20dp card radius, 8/24dp dots, 34dp bottom safe area, 48dp min tap target.
+    -->
+    <Grid RowDefinitions="Auto,*,Auto,Auto,Auto">
+
+        <!-- Layer 1: background blobs. Parallax 0.3x. -->
+        <Grid x:Name="BlobTrack" Grid.RowSpan="5" IsClippedToBounds="True" InputTransparent="True">
+            <Grid x:Name="Blob0">
+                <Ellipse WidthRequest="300" HeightRequest="300"
+                         HorizontalOptions="Start" VerticalOptions="Start"
+                         Margin="-90,40,0,0">
+                    <Ellipse.Fill>
+                        <RadialGradientBrush Center="0.5,0.5" Radius="0.5">
+                            <GradientStop Color="{AppThemeBinding Light=#3D42A5F5, Dark=#4D42A5F5}" Offset="0.0" />
+                            <GradientStop Color="#0042A5F5" Offset="1.0" />
+                        </RadialGradientBrush>
+                    </Ellipse.Fill>
+                </Ellipse>
+            </Grid>
+
+            <Grid x:Name="Blob1">
+                <Ellipse WidthRequest="320" HeightRequest="320"
+                         HorizontalOptions="End" VerticalOptions="Start"
+                         Margin="0,20,-110,0">
+                    <Ellipse.Fill>
+                        <RadialGradientBrush Center="0.5,0.5" Radius="0.5">
+                            <GradientStop Color="{AppThemeBinding Light=#334CAF50, Dark=#404CAF50}" Offset="0.0" />
+                            <GradientStop Color="#004CAF50" Offset="1.0" />
+                        </RadialGradientBrush>
+                    </Ellipse.Fill>
+                </Ellipse>
+            </Grid>
+
+            <Grid x:Name="Blob2">
+                <Ellipse WidthRequest="300" HeightRequest="300"
+                         HorizontalOptions="Center" VerticalOptions="Start"
+                         Margin="0,60,0,0">
+                    <Ellipse.Fill>
+                        <RadialGradientBrush Center="0.5,0.5" Radius="0.5">
+                            <GradientStop Color="{AppThemeBinding Light=#3DFF9800, Dark=#40FF9800}" Offset="0.0" />
+                            <GradientStop Color="#00FF9800" Offset="1.0" />
+                        </RadialGradientBrush>
+                    </Ellipse.Fill>
+                </Ellipse>
+            </Grid>
+        </Grid>
+
+        <!-- Layer 2: the illustration cards. Parallax 1.0x — the carousel itself.
+             Loop=False or slide 3 wraps back to slide 1. PeekAreaInsets=0. -->
+        <CarouselView x:Name="Carousel"
+                      Grid.Row="1"
+                      ItemsSource="{Binding Slides}"
+                      Position="{Binding Position, Mode=TwoWay}"
+                      Loop="False"
+                      PeekAreaInsets="0"
+                      IsBounceEnabled="False"
+                      HorizontalScrollBarVisibility="Never"
+                      Scrolled="OnCarouselScrolled">
+            <CarouselView.ItemTemplate>
+                <DataTemplate>
+                    <Grid Padding="16,8">
+                        <Border StrokeThickness="0"
+                                BackgroundColor="{AppThemeBinding Light={StaticResource DmsSurface}, Dark={StaticResource DmsSurfaceDark}}">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="20" />
+                            </Border.StrokeShape>
+                            <!-- Dark mode must feel premium, not black-heavy: a soft blue
+                                 glow sits behind the card. -->
+                            <Border.Shadow>
+                                <Shadow Brush="{AppThemeBinding Light=#90A4AE, Dark=#42A5F5}"
+                                        Radius="{AppThemeBinding Light=16, Dark=30}"
+                                        Opacity="{AppThemeBinding Light=0.12, Dark=0.18}"
+                                        Offset="0,12" />
+                            </Border.Shadow>
+
+                            <GraphicsView Drawable="{Binding Drawable}"
+                                          Loaded="OnSlideCanvasLoaded"
+                                          Unloaded="OnSlideCanvasUnloaded" />
+                        </Border>
+                    </Grid>
+                </DataTemplate>
+            </CarouselView.ItemTemplate>
+        </CarouselView>
+
+        <!-- Layer 3: copy. Parallax 0.6x. Lives in the page shell, never inside the
+             DataTemplate — you cannot reliably reach into realised template views
+             to animate them. -->
+        <Grid x:Name="CopyTrack" Grid.Row="2" IsClippedToBounds="True" InputTransparent="True">
+            <VerticalStackLayout x:Name="Copy0" Spacing="8" Padding="24,4,24,0">
+                <Label x:Name="Head0" Text="Sell on the go"
+                       FontSize="28" FontAttributes="Bold" HorizontalTextAlignment="Center"
+                       TextColor="{AppThemeBinding Light={StaticResource DmsText}, Dark={StaticResource DmsTextDark}}" />
+                <Label x:Name="Sub0" Text="Create bills in seconds — right at the shop counter."
+                       FontSize="15" HorizontalTextAlignment="Center"
+                       TextColor="{AppThemeBinding Light={StaticResource DmsTextSecondary}, Dark={StaticResource DmsTextSecondaryDark}}" />
+            </VerticalStackLayout>
+
+            <VerticalStackLayout x:Name="Copy1" Spacing="8" Padding="24,4,24,0" Opacity="0">
+                <Label x:Name="Head1" Text="Collect payments instantly"
+                       FontSize="28" FontAttributes="Bold" HorizontalTextAlignment="Center"
+                       TextColor="{AppThemeBinding Light={StaticResource DmsText}, Dark={StaticResource DmsTextDark}}" />
+                <Label x:Name="Sub1" Text="Record cash on the spot. Ledgers update themselves."
+                       FontSize="15" HorizontalTextAlignment="Center"
+                       TextColor="{AppThemeBinding Light={StaticResource DmsTextSecondary}, Dark={StaticResource DmsTextSecondaryDark}}" />
+            </VerticalStackLayout>
+
+            <VerticalStackLayout x:Name="Copy2" Spacing="8" Padding="24,4,24,0" Opacity="0">
+                <Label x:Name="Head2" Text="Works without internet"
+                       FontSize="28" FontAttributes="Bold" HorizontalTextAlignment="Center"
+                       TextColor="{AppThemeBinding Light={StaticResource DmsText}, Dark={StaticResource DmsTextDark}}" />
+                <Label x:Name="Sub2" Text="Keep selling offline. Everything syncs the moment you're back online."
+                       FontSize="15" HorizontalTextAlignment="Center"
+                       TextColor="{AppThemeBinding Light={StaticResource DmsTextSecondary}, Dark={StaticResource DmsTextSecondaryDark}}" />
+            </VerticalStackLayout>
+        </Grid>
+
+        <!-- Skip — top-right, 16dp inset, 48dp hit area. Hides on the last slide. -->
+        <Button x:Name="SkipButton"
+                Grid.Row="0"
+                Text="Skip"
+                Clicked="OnSkipClicked"
+                IsVisible="{Binding IsSkipVisible}"
+                HorizontalOptions="End"
+                VerticalOptions="Start"
+                Margin="16,8,16,0"
+                Padding="12,0"
+                HeightRequest="48"
+                MinimumHeightRequest="48"
+                MinimumWidthRequest="48"
+                BackgroundColor="Transparent"
+                BorderWidth="0"
+                FontSize="15"
+                TextColor="{AppThemeBinding Light={StaticResource DmsTextSecondary}, Dark={StaticResource DmsTextSecondaryDark}}" />
+
+        <!-- Page dots -->
+        <controls:PageIndicator x:Name="Indicator"
+                                Grid.Row="3"
+                                Count="3"
+                                Position="{Binding Position}"
+                                HorizontalOptions="Center" />
+
+        <!-- Bottom stack. One VerticalStackLayout: on slides 1–2 it rests at
+             TranslationY = 40 with the link and trust line at Opacity = 0; entering
+             slide 3, a single TranslateTo(0,0,320) raises it and the two rows fade in.
+             That single translate IS the "final CTA rises" behaviour. -->
+        <VerticalStackLayout x:Name="BottomStack"
+                             Grid.Row="4"
+                             VerticalOptions="End"
+                             Margin="0,12,0,50"
+                             Spacing="10"
+                             TranslationY="40">
+
+            <controls:PrimaryCta x:Name="Cta"
+                                 Text="{Binding CtaText}"
+                                 Clicked="OnCtaClicked"
+                                 Margin="16,0" />
+
+            <Button x:Name="LoginLink"
+                    Text="I already have an account"
+                    Clicked="OnLoginClicked"
+                    Opacity="0"
+                    HeightRequest="48"
+                    MinimumHeightRequest="48"
+                    BackgroundColor="Transparent"
+                    BorderWidth="0"
+                    FontSize="15"
+                    TextColor="{AppThemeBinding Light={StaticResource DmsLink}, Dark={StaticResource DmsLinkDark}}" />
+
+            <Label x:Name="TrustLine"
+                   Text="Secure · Offline-ready · Built for the field"
+                   Opacity="0"
+                   FontSize="12"
+                   HorizontalTextAlignment="Center"
+                   TextColor="{AppThemeBinding Light={StaticResource DmsTrustLine}, Dark={StaticResource DmsTrustLineDark}}" />
+        </VerticalStackLayout>
+
+        <!-- Splash sits over everything and fades out. -->
+        <controls:SplashOverlay x:Name="Splash" Grid.RowSpan="5" />
+    </Grid>
+</ContentPage>
