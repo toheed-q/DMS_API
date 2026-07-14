@@ -265,13 +265,19 @@ public partial class OnboardingPage : ContentPage
 
         var isLast = position >= _vm.Slides.Count - 1;
 
+        // Skip fades out on the last slide but keeps its 48dp row (see the XAML note).
+        SkipButton.InputTransparent = isLast;
+
         if (_reduceMotion)
         {
+            SkipButton.Opacity = isLast ? 0 : 1;
             BottomStack.TranslationY = isLast ? 0 : 40;
             LoginLink.Opacity = isLast ? 1 : 0;
             TrustLine.Opacity = isLast ? 1 : 0;
             return;
         }
+
+        SkipButton.FadeTo(isLast ? 0 : 1, 200, Easing.CubicOut);
 
         if (animate)
             AnimateCopyIn(position);

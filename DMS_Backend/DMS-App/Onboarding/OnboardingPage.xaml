@@ -132,12 +132,13 @@
             </VerticalStackLayout>
         </Grid>
 
-        <!-- Skip — top-right, 16dp inset, 48dp hit area. Hides on the last slide. -->
+        <!-- Skip — top-right, 16dp inset, 48dp hit area. Hides on the last slide by
+             fading, NOT by IsVisible: collapsing this row would drop its 48dp and jolt
+             the whole page upward on the last slide. -->
         <Button x:Name="SkipButton"
                 Grid.Row="0"
                 Text="Skip"
                 Clicked="OnSkipClicked"
-                IsVisible="{Binding IsSkipVisible}"
                 HorizontalOptions="End"
                 VerticalOptions="Start"
                 Margin="16,8,16,0"

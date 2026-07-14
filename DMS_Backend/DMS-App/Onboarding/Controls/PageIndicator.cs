@@ -19,7 +19,10 @@ public sealed class PageIndicator : ContentView
     private const double MorphMs = 380d;
 
     private readonly HorizontalStackLayout _row;
-    private readonly List<BoxView> _dots = [];
+
+    // Border, not BoxView: on Android BoxView.CornerRadius does not round reliably —
+    // it renders a square dot and leaves a grey box behind the active pill.
+    private readonly List<Border> _dots = [];
 
     public event EventHandler<int>? DotTapped;
 
@@ -71,11 +74,14 @@ public sealed class PageIndicator : ContentView
             var index = i;
             var isActive = i == Position;
 
-            var dot = new BoxView
+            var dot = new Border
             {
                 HeightRequest = DotSize,
                 WidthRequest = isActive ? PillWidth : DotSize,
-                CornerRadius = (float)(DotSize / 2d),
+                StrokeThickness = 0,
+                Stroke = null,
+                Padding = 0,
+                StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(DotSize / 2d) },
                 HorizontalOptions = LayoutOptions.Center,
                 VerticalOptions = LayoutOptions.Center
             };
@@ -100,17 +106,17 @@ public sealed class PageIndicator : ContentView
         }
     }
 
-    private static void ApplyDotColor(BoxView dot, bool isActive)
+    private static void ApplyDotColor(Border dot, bool isActive)
     {
         if (isActive)
         {
-            dot.SetAppThemeColor(BoxView.ColorProperty,
+            dot.SetAppThemeColor(BackgroundColorProperty,
                 Color.FromArgb("#1976D2"), Color.FromArgb("#42A5F5"));
         }
         else
         {
             // #757575 at 28% (light) / #F5F7FA at 24% (dark)
-            dot.SetAppThemeColor(BoxView.ColorProperty,
+            dot.SetAppThemeColor(BackgroundColorProperty,
                 Color.FromArgb("#47757575"), Color.FromArgb("#3DF5F7FA"));
         }
     }
@@ -132,7 +138,7 @@ public sealed class PageIndicator : ContentView
             MorphDot(_dots[current], toPill: true, key: $"dot{current}");
     }
 
-    private void MorphDot(BoxView dot, bool toPill, string key)
+    private void MorphDot(Border dot, bool toPill, string key)
     {
         ApplyDotColor(dot, toPill);
 
