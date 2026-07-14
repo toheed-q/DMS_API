@@ -17,10 +17,19 @@ namespace DMS_Backend.Extensions
     /// </summary>
     public static class ServiceCollectionExtensions
     {
+        /// <summary>Shortest JWT signing key HMAC-SHA256 can be trusted with.</summary>
+        private const int MinJwtKeyLength = 32;
+
         public static IServiceCollection AddSqlDatabase(this IServiceCollection services, IConfiguration config)
         {
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(config.GetConnectionString("DefaultConnection")));
+            var connectionString = config.GetConnectionString("DefaultConnection");
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new InvalidOperationException(
+                    "ConnectionStrings:DefaultConnection is not configured. Set it with " +
+                    "'dotnet user-secrets set \"ConnectionStrings:DefaultConnection\" \"<value>\"' " +
+                    "or the ConnectionStrings__DefaultConnection environment variable.");
+
+            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
             return services;
         }
 
@@ -51,6 +60,13 @@ namespace DMS_Backend.Extensions
         {
             services.Configure<JwtOptions>(config.GetSection("Jwt"));
             var jwt = config.GetSection("Jwt").Get<JwtOptions>() ?? new JwtOptions();
+
+            // Fail fast: a missing or short signing key must never fall back to a
+            // usable-but-insecure default, in any environment.
+            if (string.IsNullOrWhiteSpace(jwt.Key) || jwt.Key.Length < MinJwtKeyLength)
+                throw new InvalidOperationException(
+                    $"Jwt:Key is not configured or is shorter than {MinJwtKeyLength} characters. Set it with " +
+                    "'dotnet user-secrets set \"Jwt:Key\" \"<random 64+ chars>\"' or the Jwt__Key environment variable.");
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>

@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using DMS.Models;
 using DMS_Backend.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -26,7 +27,11 @@ namespace DMS_Backend.Data
                     var cfg = services.GetRequiredService<IConfiguration>();
                     var hasher = services.GetRequiredService<IPasswordHasher>();
                     var username = cfg["Seed:AdminUsername"] ?? "admin";
-                    var password = cfg["Seed:AdminPassword"] ?? "admin123";
+
+                    // No hardcoded fallback: an unconfigured seed password becomes a
+                    // random one, surfaced once here so the first login is still possible.
+                    var configured = cfg["Seed:AdminPassword"];
+                    var password = string.IsNullOrWhiteSpace(configured) ? GeneratePassword() : configured;
 
                     db.Users.Add(new User
                     {
@@ -47,7 +52,14 @@ namespace DMS_Backend.Data
                         CanAccessCompanies = true
                     });
                     await db.SaveChangesAsync();
-                    logger.LogInformation("Seeded default admin user '{Username}'", username);
+
+                    if (string.IsNullOrWhiteSpace(configured))
+                        logger.LogWarning(
+                            "Seeded admin '{Username}' with a generated password: {Password} — " +
+                            "store it now and change it; it is not recoverable from the database.",
+                            username, password);
+                    else
+                        logger.LogInformation("Seeded admin user '{Username}' from configuration", username);
                 }
             }
             catch (Exception ex)
@@ -56,5 +68,10 @@ namespace DMS_Backend.Data
                 throw;
             }
         }
+
+        /// <summary>Cryptographically random, URL-safe password for an unconfigured seed admin.</summary>
+        private static string GeneratePassword() =>
+            Convert.ToBase64String(RandomNumberGenerator.GetBytes(18))
+                   .Replace('+', 'A').Replace('/', 'z').TrimEnd('=');
     }
 }
