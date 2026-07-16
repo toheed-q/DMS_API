@@ -123,10 +123,10 @@
             </VerticalStackLayout>
 
             <VerticalStackLayout x:Name="Copy2" Spacing="8" Padding="24,4,24,0" Opacity="0">
-                <Label x:Name="Head2" Text="Works without internet"
+                <Label x:Name="Head2" Text="Know your numbers"
                        FontSize="28" FontAttributes="Bold" HorizontalTextAlignment="Center"
                        TextColor="{AppThemeBinding Light={StaticResource DmsText}, Dark={StaticResource DmsTextDark}}" />
-                <Label x:Name="Sub2" Text="Keep selling offline. Everything syncs the moment you're back online."
+                <Label x:Name="Sub2" Text="Track today's sales, collections and route progress — live."
                        FontSize="15" HorizontalTextAlignment="Center"
                        TextColor="{AppThemeBinding Light={StaticResource DmsTextSecondary}, Dark={StaticResource DmsTextSecondaryDark}}" />
             </VerticalStackLayout>
@@ -186,7 +186,7 @@
                     TextColor="{AppThemeBinding Light={StaticResource DmsLink}, Dark={StaticResource DmsLinkDark}}" />
 
             <Label x:Name="TrustLine"
-                   Text="Secure · Offline-ready · Built for the field"
+                   Text="Secure · Real-time · Built for the field"
                    Opacity="0"
                    FontSize="12"
                    HorizontalTextAlignment="Center"

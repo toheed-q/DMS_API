@@ -9,14 +9,12 @@
     Shell.NavBarIsVisible="False"
     Title="DMS Field">
 
+    <!-- Exactly ONE root ShellContent. A second one here would make Shell treat the
+         two as tabs and inflate a Material BottomNavigationView — chrome this flow
+         doesn't want, and which crashes on strict Material themes. Other pages
+         (login, and later the app) are registered as routes and navigated to. -->
     <ShellContent
-        Title="Onboarding"
         ContentTemplate="{DataTemplate onboarding:OnboardingPage}"
         Route="onboarding" />
-
-    <ShellContent
-        Title="Login"
-        ContentTemplate="{DataTemplate local:LoginPage}"
-        Route="login" />
 
 </Shell>

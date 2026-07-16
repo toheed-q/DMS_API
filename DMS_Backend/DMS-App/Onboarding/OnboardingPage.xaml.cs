@@ -339,6 +339,8 @@ public partial class OnboardingPage : ContentPage
     private async void GoToLogin()
     {
         StopTimer();
-        await Shell.Current.GoToAsync("//login");
+        // Relative route (registered in AppShell), not "//login": login lives outside
+        // the Shell visual tree now, so it is pushed rather than switched to.
+        await Shell.Current.GoToAsync("login");
     }
 }

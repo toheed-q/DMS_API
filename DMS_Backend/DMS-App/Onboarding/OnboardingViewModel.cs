@@ -31,8 +31,8 @@ public sealed class OnboardingViewModel : INotifyPropertyChanged
             },
             new OnboardingSlide
             {
-                Headline = "Works without internet",
-                Subtext = "Keep selling offline. Everything syncs the moment you're back online.",
+                Headline = "Know your numbers",
+                Subtext = "Track today's sales, collections and route progress — live.",
                 Drawable = new SlideThreeDrawable()
             },
         ];
