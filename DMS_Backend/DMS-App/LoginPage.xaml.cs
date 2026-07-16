@@ -38,8 +38,10 @@ public partial class LoginPage : ContentPage
 
     private async void OnLoggedIn(object? sender, AuthUser user)
     {
-        // Registered route (relative push). A proper stack-reset lands here once the
-        // real dashboard replaces this placeholder.
+        // Drop focus so the soft keyboard doesn't linger onto the dashboard.
+        UsernameEntry.Unfocus();
+        PasswordEntry.Unfocus();
+
         await Shell.Current.GoToAsync("dashboard");
     }
 

@@ -1,4 +1,5 @@
 using DMS_App.Auth;
+using DMS_App.Dashboard;
 using DMS_App.Onboarding;
 using DMS_App.Onboarding.Services;
 using DMS_App.Services;
@@ -47,6 +48,7 @@ namespace DMS_App
             builder.Services.AddSingleton<IAuthService, AuthService>();
             builder.Services.AddTransient<LoginViewModel>();
             builder.Services.AddTransient<LoginPage>();
+            builder.Services.AddTransient<DashboardViewModel>();
             builder.Services.AddTransient<DashboardPage>();
 
 #if DEBUG

@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:ctrl="clr-namespace:DMS_App.Dashboard.Controls"
+             xmlns:draw="clr-namespace:DMS_App.Dashboard.Drawables"
+             x:Class="DMS_App.Dashboard.DashboardPage"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="{StaticResource DmsBg}">
+
+    <ContentPage.Resources>
+        <Style x:Key="Card" TargetType="Border">
+            <Setter Property="BackgroundColor" Value="{StaticResource DmsSurface}" />
+            <Setter Property="StrokeThickness" Value="0" />
+            <Setter Property="Padding" Value="16" />
+            <Setter Property="StrokeShape">
+                <RoundRectangle CornerRadius="18" />
+            </Setter>
+            <Setter Property="Shadow">
+                <Shadow Brush="#90A4AE" Radius="18" Opacity="0.10" Offset="0,6" />
+            </Setter>
+        </Style>
+        <Color x:Key="CardLabel">#78909C</Color>
+    </ContentPage.Resources>
+
+    <!-- Layered: content, scrim, sidebar (top). -->
+    <Grid x:Name="RootGrid">
+
+        <!-- ===================== MAIN CONTENT ===================== -->
+        <Grid x:Name="ContentHost" RowDefinitions="Auto,*">
+
+            <!-- Top bar -->
+            <Grid Grid.Row="0"
+                  ColumnDefinitions="Auto,*,Auto,Auto"
+                  Padding="12,10"
+                  ColumnSpacing="6"
+                  BackgroundColor="{StaticResource DmsBg}">
+
+                <Button x:Name="MenuButton"
+                        Grid.Column="0"
+                        Clicked="OnToggleSidebar"
+                        BackgroundColor="Transparent"
+                        WidthRequest="44" HeightRequest="44" Padding="0" />
+                <GraphicsView Grid.Column="0" x:Name="MenuIcon"
+                              WidthRequest="24" HeightRequest="24"
+                              InputTransparent="True"
+                              HorizontalOptions="Center" VerticalOptions="Center">
+                    <GraphicsView.Drawable>
+                        <draw:AppIconDrawable Icon="Menu" Color="#263238" />
+                    </GraphicsView.Drawable>
+                </GraphicsView>
+
+                <Label Grid.Column="1" Text="Dashboard"
+                       FontSize="19" FontAttributes="Bold"
+                       VerticalOptions="Center" Margin="6,0,0,0"
+                       TextColor="{StaticResource DmsText}" />
+
+                <Border Grid.Column="2"
+                        WidthRequest="42" HeightRequest="42"
+                        BackgroundColor="{StaticResource DmsSurface}"
+                        StrokeThickness="0" Margin="2,0">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="13" />
+                    </Border.StrokeShape>
+                    <GraphicsView WidthRequest="22" HeightRequest="22"
+                                  HorizontalOptions="Center" VerticalOptions="Center">
+                        <GraphicsView.Drawable>
+                            <draw:AppIconDrawable Icon="Bell" Color="#455A64" />
+                        </GraphicsView.Drawable>
+                    </GraphicsView>
+                </Border>
+
+                <Border Grid.Column="3"
+                        x:Name="TopAvatar"
+                        WidthRequest="42" HeightRequest="42"
+                        BackgroundColor="{StaticResource DmsPrimary}"
+                        StrokeThickness="0" Margin="4,0,0,0">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="21" />
+                    </Border.StrokeShape>
+                    <Label x:Name="TopAvatarInitials" Text="–"
+                           FontSize="15" FontAttributes="Bold" TextColor="White"
+                           HorizontalTextAlignment="Center" VerticalTextAlignment="Center" />
+                </Border>
+            </Grid>
+
+            <!-- Scrollable content -->
+            <ScrollView Grid.Row="1">
+                <VerticalStackLayout Padding="16,4,16,32" Spacing="18">
+
+                    <!-- Greeting -->
+                    <VerticalStackLayout Spacing="2">
+                        <Label x:Name="GreetingLabel" Text="Good morning,"
+                               FontSize="14" TextColor="{StaticResource DmsTextSecondary}" />
+                        <Label x:Name="NameLabel" Text="Salesman"
+                               FontSize="24" FontAttributes="Bold"
+                               TextColor="{StaticResource DmsText}" />
+                        <Label x:Name="DateLabel" Text=""
+                               FontSize="12.5" TextColor="{StaticResource CardLabel}" Margin="0,2,0,0" />
+                    </VerticalStackLayout>
+
+                    <!-- KPI cards -->
+                    <FlexLayout x:Name="KpiFlex" Wrap="Wrap" JustifyContent="SpaceBetween" AlignItems="Stretch">
+
+                        <Border Style="{StaticResource Card}" FlexLayout.Basis="48%" Margin="0,0,0,12">
+                            <VerticalStackLayout Spacing="10">
+                                <Grid ColumnDefinitions="Auto,*">
+                                    <Border WidthRequest="38" HeightRequest="38" BackgroundColor="#141976D2" StrokeThickness="0" HorizontalOptions="Start">
+                                        <Border.StrokeShape><RoundRectangle CornerRadius="11" /></Border.StrokeShape>
+                                        <GraphicsView WidthRequest="20" HeightRequest="20" HorizontalOptions="Center" VerticalOptions="Center">
+                                            <GraphicsView.Drawable><draw:AppIconDrawable Icon="NewBill" Color="#1976D2" /></GraphicsView.Drawable>
+                                        </GraphicsView>
+                                    </Border>
+                                </Grid>
+                                <Label x:Name="KpiSales" Text="Rs 24,850" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource DmsText}" />
+                                <Label Text="Today's sales" FontSize="12" TextColor="{StaticResource CardLabel}" />
+                                <Label x:Name="KpiSalesDelta" Text="+12% vs yesterday" FontSize="11" TextColor="{StaticResource DmsSuccess}" FontAttributes="Bold" />
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <Border Style="{StaticResource Card}" FlexLayout.Basis="48%" Margin="0,0,0,12">
+                            <VerticalStackLayout Spacing="10">
+                                <Border WidthRequest="38" HeightRequest="38" BackgroundColor="#144CAF50" StrokeThickness="0" HorizontalOptions="Start">
+                                    <Border.StrokeShape><RoundRectangle CornerRadius="11" /></Border.StrokeShape>
+                                    <GraphicsView WidthRequest="20" HeightRequest="20" HorizontalOptions="Center" VerticalOptions="Center">
+                                        <GraphicsView.Drawable><draw:AppIconDrawable Icon="Collect" Color="#2E7D32" /></GraphicsView.Drawable>
+                                    </GraphicsView>
+                                </Border>
+                                <Label x:Name="KpiCollected" Text="Rs 18,600" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource DmsText}" />
+                                <Label Text="Collected" FontSize="12" TextColor="{StaticResource CardLabel}" />
+                                <Label x:Name="KpiCollectedSub" Text="9 payments" FontSize="11" TextColor="{StaticResource CardLabel}" />
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <Border Style="{StaticResource Card}" FlexLayout.Basis="48%" Margin="0,0,0,12">
+                            <VerticalStackLayout Spacing="10">
+                                <Border WidthRequest="38" HeightRequest="38" BackgroundColor="#14FF9800" StrokeThickness="0" HorizontalOptions="Start">
+                                    <Border.StrokeShape><RoundRectangle CornerRadius="11" /></Border.StrokeShape>
+                                    <GraphicsView WidthRequest="20" HeightRequest="20" HorizontalOptions="Center" VerticalOptions="Center">
+                                        <GraphicsView.Drawable><draw:AppIconDrawable Icon="Ledger" Color="#EF6C00" /></GraphicsView.Drawable>
+                                    </GraphicsView>
+                                </Border>
+                                <Label x:Name="KpiOutstanding" Text="Rs 6,250" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource DmsText}" />
+                                <Label Text="Outstanding" FontSize="12" TextColor="{StaticResource CardLabel}" />
+                                <Label x:Name="KpiOutstandingSub" Text="4 shops due" FontSize="11" TextColor="{StaticResource DmsWarning}" FontAttributes="Bold" />
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <Border Style="{StaticResource Card}" FlexLayout.Basis="48%" Margin="0,0,0,12">
+                            <VerticalStackLayout Spacing="10">
+                                <Border WidthRequest="38" HeightRequest="38" BackgroundColor="#142196F3" StrokeThickness="0" HorizontalOptions="Start">
+                                    <Border.StrokeShape><RoundRectangle CornerRadius="11" /></Border.StrokeShape>
+                                    <GraphicsView WidthRequest="20" HeightRequest="20" HorizontalOptions="Center" VerticalOptions="Center">
+                                        <GraphicsView.Drawable><draw:AppIconDrawable Icon="Route" Color="#1565C0" /></GraphicsView.Drawable>
+                                    </GraphicsView>
+                                </Border>
+                                <Label x:Name="KpiRoute" Text="8 / 12" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource DmsText}" />
+                                <Label Text="Route progress" FontSize="12" TextColor="{StaticResource CardLabel}" />
+                                <Label x:Name="KpiRouteSub" Text="shops visited" FontSize="11" TextColor="{StaticResource CardLabel}" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </FlexLayout>
+
+                    <!-- Sales chart -->
+                    <Border Style="{StaticResource Card}">
+                        <VerticalStackLayout Spacing="4">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <Label Text="This week's sales" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource DmsText}" />
+                                <Label Grid.Column="1" Text="Rs 1,11,850" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource DmsPrimary}" VerticalOptions="Center" />
+                            </Grid>
+                            <GraphicsView x:Name="ChartView" HeightRequest="160" Margin="0,8,0,0" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Quick actions -->
+                    <Label Text="Quick actions" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource DmsText}" Margin="2,2,0,0" />
+                    <Grid x:Name="QuickActions" ColumnDefinitions="*,*,*,*" ColumnSpacing="10" />
+
+                    <!-- Recent activity -->
+                    <Grid ColumnDefinitions="*,Auto" Margin="2,4,0,0">
+                        <Label Text="Recent activity" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource DmsText}" />
+                        <Label Grid.Column="1" Text="View all" FontSize="12.5" TextColor="{StaticResource DmsLink}" FontAttributes="Bold" VerticalOptions="Center" />
+                    </Grid>
+                    <Border Style="{StaticResource Card}" Padding="6">
+                        <VerticalStackLayout x:Name="ActivityList" Spacing="0" />
+                    </Border>
+
+                </VerticalStackLayout>
+            </ScrollView>
+        </Grid>
+
+        <!-- ===================== SCRIM (drawer mode) ===================== -->
+        <BoxView x:Name="Scrim"
+                 Color="Black" Opacity="0" IsVisible="False">
+            <BoxView.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnScrimTapped" />
+            </BoxView.GestureRecognizers>
+        </BoxView>
+
+        <!-- ===================== SIDEBAR (top layer) ===================== -->
+        <ctrl:AppSidebar x:Name="Sidebar"
+                         HorizontalOptions="Start"
+                         VerticalOptions="Fill">
+            <ctrl:AppSidebar.Shadow>
+                <Shadow Brush="#263238" Radius="24" Opacity="0.18" Offset="4,0" />
+            </ctrl:AppSidebar.Shadow>
+        </ctrl:AppSidebar>
+    </Grid>
+</ContentPage>
