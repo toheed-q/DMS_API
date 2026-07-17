@@ -51,6 +51,13 @@ namespace DMS_Backend.Services
                 return Result<LoginResponse>.Failure("Your account is pending approval.", ErrorType.Unauthorized);
             }
 
+            // Master activation switch: an inactive account (false or null) cannot sign in.
+            if (user.IsAccountActive != true)
+            {
+                _logger.LogWarning("Login blocked for inactive account {Username}", username);
+                return Result<LoginResponse>.Failure("You are not authorized to access this account.", ErrorType.Unauthorized);
+            }
+
             var (token, expiresAt) = _tokenService.CreateToken(user);
             _logger.LogInformation("User {Username} (role {Role}) logged in", user.Username, user.Role);
 

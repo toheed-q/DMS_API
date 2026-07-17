@@ -40,6 +40,7 @@ namespace DMS_Backend.Data
                         Role = "Admin",
                         FullName = "System Administrator",
                         IsApproved = true,
+                        IsAccountActive = true,
                         CreatedAt = DateTime.UtcNow,
                         CanAccessPOS = true,
                         CanAccessProducts = true,

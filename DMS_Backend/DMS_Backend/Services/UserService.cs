@@ -75,6 +75,7 @@ namespace DMS_Backend.Services
                 FullName = request.FullName,
                 Email = request.Email,
                 IsApproved = true,
+                IsAccountActive = request.IsAccountActive,
                 CreatedAt = DateTime.UtcNow,
                 ApprovedBy = _currentUser.UserId,
                 ApprovedAt = DateTime.UtcNow,
@@ -164,6 +165,7 @@ namespace DMS_Backend.Services
                 FullName = user.FullName,
                 Email = user.Email,
                 IsApproved = user.IsApproved,
+                IsAccountActive = user.IsAccountActive == true,
                 Permissions = permissions
             };
         }

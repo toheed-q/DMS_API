@@ -20,6 +20,12 @@ namespace DMS_Backend.Contracts
         public string? FullName { get; set; }
         public string? Email { get; set; }
 
+        /// <summary>
+        /// Whether the account may sign in. Defaults to false — an inactive account
+        /// is created but cannot log in until explicitly activated.
+        /// </summary>
+        public bool IsAccountActive { get; set; } = false;
+
         // Granular permissions (ignored for Admin, who has everything).
         public bool CanAccessPOS { get; set; }
         public bool CanAccessProducts { get; set; }
@@ -42,6 +48,7 @@ namespace DMS_Backend.Contracts
         public string? FullName { get; set; }
         public string? Email { get; set; }
         public bool IsApproved { get; set; }
+        public bool IsAccountActive { get; set; }
         public List<string> Permissions { get; set; } = [];
     }
 }

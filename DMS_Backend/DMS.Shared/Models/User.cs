@@ -28,7 +28,14 @@ namespace DMS.Models
         public string? FullName { get; set; }
         
         public bool IsApproved { get; set; } = false;
-        
+
+        /// <summary>
+        /// Master on/off switch for signing in. A new account is inactive by
+        /// default (false) and cannot log in until an admin activates it —
+        /// login is rejected with "You are not authorized" while this is false/null.
+        /// </summary>
+        public bool? IsAccountActive { get; set; } = false;
+
         public DateTime? CreatedAt { get; set; }
         
         public DateTime? ApprovedAt { get; set; }
