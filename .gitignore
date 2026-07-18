@@ -78,3 +78,4 @@ $RECYCLE.BIN/
 publish/
 *.pubxml.user
 DMS_Backend/scripts/create-salesman-account.sql
+create-salesman-account.sql
