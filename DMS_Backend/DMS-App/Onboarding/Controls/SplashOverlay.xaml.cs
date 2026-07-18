@@ -13,6 +13,18 @@ namespace DMS_App.Onboarding.Controls;
 /// </summary>
 public partial class SplashOverlay : ContentView
 {
+    /// <summary>
+    /// How long the splash stays on screen at minimum, animation aside.
+    ///
+    /// MAUI animations obey Android's animator duration scale, so on a device where
+    /// system animations are switched off — developer options, or a battery saver —
+    /// every FadeTo/TranslateTo below completes instantly and the whole sequence
+    /// collapses to nothing. Without a floor the brand would flash past before
+    /// anyone could read it. Slightly longer than the 1.2s sequence so a normal
+    /// device is unaffected.
+    /// </summary>
+    private const int MinimumVisibleMs = 1500;
+
     private CancellationTokenSource? _drift;
 
     public SplashOverlay()
@@ -36,6 +48,25 @@ public partial class SplashOverlay : ContentView
 
         StartMeshDrift();
 
+        // Race the sequence against the floor: whichever takes longer wins. On a
+        // normal device the sequence does; where animations are disabled it finishes
+        // at once and the delay keeps the assembled mark on screen anyway.
+        await Task.WhenAll(RunSequenceAsync(), Task.Delay(MinimumVisibleMs));
+
+        // If the animations above no-oped, some pieces may still be mid-flight
+        // visually. Pin everything to its end state so the last frame before the
+        // fade is always the complete mark.
+        SettleFinalState();
+
+        await this.FadeTo(0, 420, Easing.CubicOut);
+
+        StopMeshDrift();
+        IsVisible = false;
+    }
+
+    /// <summary>The 1.2s assembly sequence, split out so it can be raced against a floor.</summary>
+    private async Task RunSequenceAsync()
+    {
         // 0–250 — mesh in
         await Mesh.FadeTo(1, 250, Easing.CubicOut);
 
@@ -53,11 +84,6 @@ public partial class SplashOverlay : ContentView
         await Task.WhenAll(
             BrandText.FadeTo(1, 300, Easing.CubicOut),
             BrandText.TranslateTo(0, 0, 300, Easing.CubicOut));
-
-        await this.FadeTo(0, 420, Easing.CubicOut);
-
-        StopMeshDrift();
-        IsVisible = false;
     }
 
     private static Task AssemblePiece(VisualElement piece) =>
