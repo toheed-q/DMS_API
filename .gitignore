@@ -38,6 +38,9 @@ logs/
 # Keep these out; use user-secrets or environment variables instead.
 # ---------------------------------------------------------------------------
 appsettings.*.local.json
+# Real production values live here and are published to the host, never committed.
+# appsettings.Production.example.json documents the shape.
+appsettings.Production.json
 secrets.json
 *.pfx
 *.p12
