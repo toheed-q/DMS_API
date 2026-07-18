@@ -14,11 +14,26 @@ namespace DMS_Backend.Contracts
         [Required]
         public string Role { get; set; } = "User";
 
-        /// <summary>Required when Role is "Salesman" — links the login to that salesman.</summary>
+        /// <summary>
+        /// For a "Salesman" login, links it to an EXISTING salesman record. Leave this
+        /// null to have a new salesman record created automatically from the fields
+        /// below — that way one call sets up both the employee record and the login.
+        /// </summary>
         public int? SalesmanId { get; set; }
 
         public string? FullName { get; set; }
         public string? Email { get; set; }
+
+        // --- Used only when creating a new salesman record (Role = "Salesman" and
+        //     SalesmanId is null). Ignored otherwise. ---
+
+        /// <summary>Required when a new salesman record is being created.</summary>
+        public string? PhoneNumber { get; set; }
+
+        /// <summary>Format: 11111-1111111-1</summary>
+        public string? CNIC { get; set; }
+
+        public decimal MonthlySalary { get; set; }
 
         /// <summary>
         /// Whether the account may sign in. Defaults to false — an inactive account

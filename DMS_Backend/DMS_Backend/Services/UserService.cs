@@ -46,22 +46,62 @@ namespace DMS_Backend.Services
                 return Fail($"Username '{username}' is already taken.", ErrorType.Conflict);
 
             // A salesman login is meaningless without the salesman record it maps to.
+            // Either link to an existing record, or create one here so that setting up
+            // a new salesman is a single call instead of two separate inserts.
             string? salesmanName = null;
+            int? salesmanId = null;
+            Salesman? newSalesman = null;
+
             if (role == Roles.Salesman)
             {
-                if (request.SalesmanId is null)
-                    return Fail("A Salesman account must be linked to a salesman (salesmanId).", ErrorType.Validation);
+                if (request.SalesmanId is not null)
+                {
+                    salesmanName = await _db.Salesmen
+                        .Where(s => s.SalesmanId == request.SalesmanId.Value)
+                        .Select(s => s.FullName)
+                        .FirstOrDefaultAsync();
 
-                salesmanName = await _db.Salesmen
-                    .Where(s => s.SalesmanId == request.SalesmanId.Value)
-                    .Select(s => s.FullName)
-                    .FirstOrDefaultAsync();
+                    if (salesmanName is null)
+                        return Fail($"Salesman {request.SalesmanId} was not found.", ErrorType.NotFound);
 
-                if (salesmanName is null)
-                    return Fail($"Salesman {request.SalesmanId} was not found.", ErrorType.NotFound);
+                    if (await _db.Users.AnyAsync(u => u.SalesmanId == request.SalesmanId.Value))
+                        return Fail($"Salesman {request.SalesmanId} already has a login.", ErrorType.Conflict);
 
-                if (await _db.Users.AnyAsync(u => u.SalesmanId == request.SalesmanId.Value))
-                    return Fail($"Salesman {request.SalesmanId} already has a login.", ErrorType.Conflict);
+                    salesmanId = request.SalesmanId;
+                }
+                else
+                {
+                    // No existing record named — create one from the request.
+                    if (string.IsNullOrWhiteSpace(request.FullName))
+                        return Fail("fullName is required to create a salesman.", ErrorType.Validation);
+
+                    if (string.IsNullOrWhiteSpace(request.PhoneNumber))
+                        return Fail("phoneNumber is required to create a salesman.", ErrorType.Validation);
+
+                    newSalesman = new Salesman
+                    {
+                        FullName = request.FullName.Trim(),
+                        PhoneNumber = request.PhoneNumber.Trim(),
+                        CNIC = string.IsNullOrWhiteSpace(request.CNIC) ? null : request.CNIC.Trim(),
+                        MonthlySalary = request.MonthlySalary,
+                        IsActive = true,
+                        CreatedAt = DateTime.Now
+                    };
+
+                    _db.Salesmen.Add(newSalesman);
+                    salesmanName = newSalesman.FullName;
+                }
+            }
+
+            // The salesman record has to be saved first to get its identity, but the
+            // login is what makes it useful — so both go in one transaction and a
+            // failure on either side leaves nothing behind.
+            await using var tx = await _db.Database.BeginTransactionAsync();
+
+            if (newSalesman is not null)
+            {
+                await _db.SaveChangesAsync();
+                salesmanId = newSalesman.SalesmanId;
             }
 
             var isAdmin = role == Roles.Admin;
@@ -71,7 +111,7 @@ namespace DMS_Backend.Services
                 Username = username,
                 Password = _passwordHasher.Hash(request.Password),
                 Role = role,
-                SalesmanId = role == Roles.Salesman ? request.SalesmanId : null,
+                SalesmanId = salesmanId,
                 FullName = request.FullName,
                 Email = request.Email,
                 IsApproved = true,
@@ -94,10 +134,11 @@ namespace DMS_Backend.Services
 
             _db.Users.Add(user);
             await _db.SaveChangesAsync();
+            await tx.CommitAsync();
 
             _logger.LogInformation(
-                "User {Username} created with role {Role} (salesman {SalesmanId}) by {Creator}",
-                user.Username, user.Role, user.SalesmanId, _currentUser.Username);
+                "User {Username} created with role {Role} (salesman {SalesmanId}, newly created: {Created}) by {Creator}",
+                user.Username, user.Role, user.SalesmanId, newSalesman is not null, _currentUser.Username);
 
             return Result<UserDto>.Success(Map(user, salesmanName));
         }
